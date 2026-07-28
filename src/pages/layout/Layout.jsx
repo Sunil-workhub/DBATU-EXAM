@@ -31,8 +31,8 @@ export default function Layout() {
 
   const navItems = [
     { label: "Student Result Portal", path: "/results", icon: GraduationCap },
-    { label: "Dashboard", path: "/dashboard", icon: Home },
-    { label: "Reports", path: "/reports", icon: FileText },
+    // { label: "Dashboard", path: "/dashboard", icon: Home },
+    // { label: "Reports", path: "/reports", icon: FileText },
   ];
 
   const SIDEBAR_WIDTH = 240;
