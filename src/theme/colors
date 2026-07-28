@@ -1,0 +1,28 @@
+// ============================================================================
+// DBATU Student Portal — shared design tokens
+// Keeping every screen (login, sidebar, navbar, result) on one palette so the
+// app reads as a single official system rather than a stitched-together demo.
+// ============================================================================
+export const COLOR = {
+  ink: "#132B2C",
+  ledger: "#0F3D3E",
+  ledgerDeep: "#0A2B2C",
+  ledgerLine: "#1C5250",
+  parchment: "#FBF6EC",
+  parchmentDeep: "#F3EBD9",
+  brass: "#B8863B",
+  brassLight: "#D7AE68",
+  rose: "#A63D4F",
+  roseLight: "#F5E4E7",
+  slate: "#5B6B6B",
+  white: "#FFFFFF",
+};
+
+// Deterministic "photo" substitute — a two-letter monogram avatar so no real
+// or stock photo is ever implied for a demo student record.
+export function initialsOf(fullName = "") {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "??";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
