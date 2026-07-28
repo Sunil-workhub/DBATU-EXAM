@@ -135,7 +135,7 @@ export default function LoginPage() {
   const handleDemoBypass = () => {
     const demoUser = {
       emp_Id: "2130331246058",
-      name: "SHIRKE PRAJYOT SURENDRA",
+      name: "SUNIL VARMA",
       role: "Student",
     };
     sessionStorage.setItem("user", JSON.stringify(demoUser));

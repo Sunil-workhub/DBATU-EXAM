@@ -468,13 +468,6 @@ export default function StudentResultPortal() {
             <GraduationCap size={22} color="#002147" /> Student Statement of
             Marks
           </h2>
-          <p
-            style={{ margin: "2px 0 0", fontSize: "12.5px", color: "#64748b" }}
-          >
-            {loading
-              ? "Loading excel files from public folder..."
-              : "Data live-fetched from Excel files in public folder"}
-          </p>
         </div>
 
         <div
