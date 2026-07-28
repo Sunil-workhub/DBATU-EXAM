@@ -32,6 +32,16 @@ const getGradeBadgeStyle = (grade) => {
   return { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" };
 };
 
+const getResultClass = (cgpaVal) => {
+  const cgpa = parseFloat(cgpaVal);
+  if (isNaN(cgpa) || cgpa === 0) return "-";
+  if (cgpa >= 7.75) return "First Class with Distinction";
+  if (cgpa >= 6.75) return "First Class";
+  if (cgpa >= 6.0) return "Higher Second Class";
+  if (cgpa >= 5.0) return "Second Class";
+  return "Pass Class";
+};
+
 export default function StudentResultPortal() {
   const [studentDatabase, setStudentDatabase] = useState(null);
   const [inputPrn, setInputPrn] = useState("123456789");
@@ -63,8 +73,8 @@ export default function StudentResultPortal() {
       const sems = [...new Set(dfPrn.map((r) => r.sem))].sort((a, b) => a - b);
 
       const semData = {};
-      let cumTotalCredits = 0.0;
-      let cumTotalGpXCredits = 0.0;
+      const passedSubjectsMap = {};
+      const activeBacklogs = new Set();
 
       sems.forEach((sem) => {
         const dfSem = dfPrn.filter((r) => r.sem === sem);
@@ -77,11 +87,11 @@ export default function StudentResultPortal() {
           const stype = seasonTypeMap[sid] || "Regular";
 
           const subjects = [];
-          let currCredits = 0.0;
-          let currGpXCredits = 0.0;
+          let currCreditsVal = 0.0;
+          let currGpXCreditsVal = 0.0;
           let totalObtMarks = 0;
           let totalMaxMarks = 0;
-          let hasFail = false;
+          let currentAttemptHasFail = false;
 
           dfAttempt.forEach((r) => {
             const subCode = String(r.Subject || "").trim();
@@ -95,12 +105,22 @@ export default function StudentResultPortal() {
                 : "-";
 
             const obtTotal = parseInt(r.TotalMarks) || 0;
-            const maxTotal = parseInt(r.Outof100Marks) || 100;
-
             const grade = String(r.Grade || "-");
             const res = String(r.Result || "Pass");
-            if (res.toUpperCase() === "FAIL" || grade === "FF") {
-              hasFail = true;
+
+            const isSubjectFail =
+              res.toUpperCase() === "FAIL" || grade.toUpperCase() === "FF";
+
+            if (isSubjectFail) {
+              currentAttemptHasFail = true;
+              activeBacklogs.add(subCode);
+            } else {
+              activeBacklogs.delete(subCode);
+              passedSubjectsMap[subCode] = {
+                credits: credits,
+                gp: gp,
+                creditPoints: credits * gp,
+              };
             }
 
             const ca =
@@ -122,62 +142,102 @@ export default function StudentResultPortal() {
                 ? String(Math.round(r.EndExamMarks))
                 : "-";
 
-            currCredits += credits;
-            currGpXCredits += credits * gp;
+            const maxCA = ca !== "-" ? 20 : 0;
+            const maxMID = mid !== "-" ? 20 : 0;
+            const maxESE = ese !== "-" ? 60 : 0;
+            const maxTotal =
+              maxCA + maxMID + maxESE > 0 ? maxCA + maxMID + maxESE : 100;
+
+            if (!isSubjectFail) {
+              currCreditsVal += credits;
+              currGpXCreditsVal += credits * gp;
+            }
+
             totalObtMarks += obtTotal;
             totalMaxMarks += maxTotal;
 
             subjects.push({
               code: subCode,
               name: subName,
-              totCA: ca !== "-" ? "20" : "-",
-              totMID: mid !== "-" ? "20" : "-",
-              totESE: ese !== "-" ? "60" : "-",
+              totCA: maxCA > 0 ? String(maxCA) : "-",
+              totMID: maxMID > 0 ? String(maxMID) : "-",
+              totESE: maxESE > 0 ? String(maxESE) : "-",
               totOverall: String(maxTotal),
               obtCA: ca,
               obtMID: mid,
               obtESE: ese,
               grace: grace,
               obtTotal: String(obtTotal),
-              credit: credits.toFixed(1),
-              gradePoint: gp.toFixed(1),
-              creditPoint: (gp * credits).toFixed(1),
+              credit: isSubjectFail ? "-" : credits.toFixed(1),
+              gradePoint: isSubjectFail ? "-" : gp.toFixed(1),
+              creditPoint: isSubjectFail ? "-" : (gp * credits).toFixed(1),
               grade: grade,
             });
           });
 
-          const sgpa =
-            currCredits > 0
-              ? (currGpXCredits / currCredits).toFixed(2)
-              : "0.00";
-          cumTotalCredits += currCredits;
-          cumTotalGpXCredits += currGpXCredits;
-          const cgpa =
-            cumTotalCredits > 0
-              ? (cumTotalGpXCredits / cumTotalCredits).toFixed(2)
+          // Semester performance values (Set to "-" if current attempt has fail)
+          const currCreditsDisp = currentAttemptHasFail
+            ? "-"
+            : currCreditsVal.toFixed(1);
+          const currGradePointsDisp = currentAttemptHasFail
+            ? "-"
+            : currGpXCreditsVal.toFixed(1);
+          const sgpaDisp = currentAttemptHasFail
+            ? "-"
+            : currCreditsVal > 0
+              ? (currGpXCreditsVal / currCreditsVal).toFixed(2)
               : "0.00";
 
-          const finalRes = hasFail
+          // Cumulative performance values (Set to "-" if any backlogs exist)
+          let cumCreditsDisp = "-";
+          let cumGradePointsDisp = "-";
+          let cgpaDisp = "-";
+
+          if (activeBacklogs.size === 0) {
+            let cumTotalCreditsVal = 0.0;
+            let cumTotalGpXCreditsVal = 0.0;
+            Object.values(passedSubjectsMap).forEach((item) => {
+              cumTotalCreditsVal += item.credits;
+              cumTotalGpXCreditsVal += item.creditPoints;
+            });
+            cumCreditsDisp = cumTotalCreditsVal.toFixed(1);
+            cumGradePointsDisp = cumTotalGpXCreditsVal.toFixed(1);
+            cgpaDisp =
+              cumTotalCreditsVal > 0
+                ? (cumTotalGpXCreditsVal / cumTotalCreditsVal).toFixed(2)
+                : "0.00";
+          }
+
+          const finalRes = currentAttemptHasFail
             ? "FAIL"
             : subjects.some((s) => s.grace !== "-")
               ? "Pass With Grace"
               : "Pass";
 
+          let resultClass = null;
+          if (sem === 8 || sem === "8") {
+            resultClass =
+              finalRes !== "FAIL" && cgpaDisp !== "-"
+                ? getResultClass(cgpaDisp)
+                : "-";
+          }
+
           attempts.push({
             examSeasonId: sid,
             examName: examName,
             seasonType: stype,
-            status: hasFail ? "Fail" : "Pass",
+            status: currentAttemptHasFail ? "Fail" : "Pass",
             subjects: subjects,
             summary: {
               totalMarks: `${totalObtMarks} / ${totalMaxMarks}`,
               finalResult: finalRes,
-              currCredits: currCredits.toFixed(1),
-              currGradePoints: currGpXCredits.toFixed(1),
-              sgpa: sgpa,
-              cumCredits: cumTotalCredits.toFixed(1),
-              cumGradePoints: cumTotalGpXCredits.toFixed(1),
-              cgpa: cgpa,
+              currCredits: currCreditsDisp,
+              currGradePoints: currGradePointsDisp,
+              sgpa: sgpaDisp,
+              cumCredits: cumCreditsDisp,
+              cumGradePoints: cumGradePointsDisp,
+              cgpa: cgpaDisp,
+              resultClass: resultClass,
             },
           });
         });
@@ -203,7 +263,6 @@ export default function StudentResultPortal() {
         setLoading(true);
         setError("");
 
-        // Correct Root Paths for Public Folder Files
         const filePaths = [
           encodeURI("/data/Newdata.xlsx"),
           encodeURI("/data/exam_seasons.csv"),
@@ -409,6 +468,13 @@ export default function StudentResultPortal() {
             <GraduationCap size={22} color="#002147" /> Student Statement of
             Marks
           </h2>
+          <p
+            style={{ margin: "2px 0 0", fontSize: "12.5px", color: "#64748b" }}
+          >
+            {loading
+              ? "Loading excel files from public folder..."
+              : "Data live-fetched from Excel files in public folder"}
+          </p>
         </div>
 
         <div
@@ -795,7 +861,15 @@ export default function StudentResultPortal() {
                               <td style={tdMutedStyle}>{sub.totCA}</td>
                               <td style={tdMutedStyle}>{sub.totMID}</td>
                               <td style={tdMutedStyle}>{sub.totESE}</td>
-                              <td style={tdMutedStyle}>{sub.totOverall}</td>
+                              <td
+                                style={{
+                                  ...tdMutedStyle,
+                                  fontWeight: "700",
+                                  color: "#475569",
+                                }}
+                              >
+                                {sub.totOverall}
+                              </td>
                               <td style={tdStyle}>{sub.obtCA}</td>
                               <td style={tdStyle}>{sub.obtMID}</td>
                               <td style={tdStyle}>{sub.obtESE}</td>
@@ -970,16 +1044,30 @@ export default function StudentResultPortal() {
                       <div
                         style={{
                           ...metricItemStyle,
-                          backgroundColor: "#eff6ff",
+                          backgroundColor:
+                            attempt.summary.sgpa === "-"
+                              ? "#fef2f2"
+                              : "#eff6ff",
                         }}
                       >
-                        <span style={{ ...metricLabelStyle, color: "#1d4ed8" }}>
+                        <span
+                          style={{
+                            ...metricLabelStyle,
+                            color:
+                              attempt.summary.sgpa === "-"
+                                ? "#b91c1c"
+                                : "#1d4ed8",
+                          }}
+                        >
                           SGPA
                         </span>
                         <span
                           style={{
                             ...metricValueStyle,
-                            color: "#1d4ed8",
+                            color:
+                              attempt.summary.sgpa === "-"
+                                ? "#b91c1c"
+                                : "#1d4ed8",
                             fontSize: "16px",
                           }}
                         >
@@ -1018,16 +1106,30 @@ export default function StudentResultPortal() {
                       <div
                         style={{
                           ...metricItemStyle,
-                          backgroundColor: "#f0fdf4",
+                          backgroundColor:
+                            attempt.summary.cgpa === "-"
+                              ? "#fef2f2"
+                              : "#f0fdf4",
                         }}
                       >
-                        <span style={{ ...metricLabelStyle, color: "#15803d" }}>
+                        <span
+                          style={{
+                            ...metricLabelStyle,
+                            color:
+                              attempt.summary.cgpa === "-"
+                                ? "#b91c1c"
+                                : "#15803d",
+                          }}
+                        >
                           CGPA
                         </span>
                         <span
                           style={{
                             ...metricValueStyle,
-                            color: "#15803d",
+                            color:
+                              attempt.summary.cgpa === "-"
+                                ? "#b91c1c"
+                                : "#15803d",
                             fontSize: "16px",
                           }}
                         >
@@ -1037,6 +1139,54 @@ export default function StudentResultPortal() {
                     </div>
                   </div>
                 </div>
+
+                {/* Final Degree Class Card */}
+                {attempt.summary.resultClass && (
+                  <div
+                    style={{
+                      marginTop: "14px",
+                      backgroundColor: "#f0fdf4",
+                      border: "1px solid #bbf7d0",
+                      borderRadius: "10px",
+                      padding: "12px 18px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <GraduationCap size={20} color="#15803d" />
+                      <span
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: "700",
+                          color: "#166534",
+                        }}
+                      >
+                        FINAL PROGRAMME CLASS / DIVISION:
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "800",
+                        color: "#15803d",
+                        backgroundColor: "#ffffff",
+                        padding: "4px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid #86efac",
+                      }}
+                    >
+                      {attempt.summary.resultClass}
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
