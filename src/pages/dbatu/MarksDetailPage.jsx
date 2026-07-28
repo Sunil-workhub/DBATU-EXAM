@@ -8,6 +8,7 @@ import {
   Info,
   TrendingUp,
   AlertTriangle,
+  SearchX,
 } from "lucide-react";
 
 import BgImage from "../../assets/images/dbatuicon.jpeg";
@@ -60,7 +61,7 @@ const getGradeBadgeStyle = (grade) => {
 
 export default function StudentResultPortal() {
   const [studentDatabase, setStudentDatabase] = useState(null);
-  const [inputPrn, setInputPrn] = useState("123456789");
+  const [inputPrn, setInputPrn] = useState("");
   const [studentData, setStudentData] = useState(null);
   const [activeSem, setActiveSem] = useState("Sem 1");
   const [loading, setLoading] = useState(true);
@@ -84,17 +85,6 @@ export default function StudentResultPortal() {
         }
 
         setStudentDatabase(db);
-
-        // Set default active PRN
-        if (db["123456789"]) {
-          setStudentData(db["123456789"]);
-          setActiveSem(Object.keys(db["123456789"].semesters)[0] || "Sem 1");
-        } else {
-          const firstPrn = Object.keys(db)[0];
-          setStudentData(db[firstPrn]);
-          setActiveSem(Object.keys(db[firstPrn].semesters)[0] || "Sem 1");
-          setInputPrn(firstPrn);
-        }
       } catch (err) {
         console.error("Failed to load JSON DB:", err);
         setError(`Failed to load student records: ${err.message}`);
@@ -109,6 +99,13 @@ export default function StudentResultPortal() {
   const handleSearch = () => {
     setError("");
     const query = inputPrn.trim();
+
+    if (!query) {
+      setError("Please enter a valid Student PRN number.");
+      setStudentData(null);
+      return;
+    }
+
     if (!studentDatabase) {
       setError("Database is not loaded yet.");
       return;
@@ -191,6 +188,7 @@ export default function StudentResultPortal() {
               value={inputPrn}
               onChange={(e) => setInputPrn(e.target.value)}
               placeholder="Enter Student PRN..."
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               style={{
                 width: "100%",
                 padding: "8px 12px 8px 36px",
@@ -261,7 +259,7 @@ export default function StudentResultPortal() {
             </div>
           )}
 
-          {studentData && (
+          {studentData ? (
             <div
               style={{
                 background: "#ffffff",
@@ -943,11 +941,61 @@ export default function StudentResultPortal() {
                   }}
                 >
                   You may use these online results for quick reference, but they
-                  do not replace your official grades. Please ensure you verify
-                  your final marks against the original printed transcript
-                  provided by the University.
+                  do not replace your official grades.
                 </p>
               </div>
+            </div>
+          ) : (
+            /* Empty State Container */
+            <div
+              style={{
+                background: "#ffffff",
+                borderRadius: "14px",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.02)",
+                border: "1px dashed #cbd5e1",
+                padding: "60px 20px",
+                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f1f5f9",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "16px",
+                }}
+              >
+                <SearchX size={26} color="#64748b" />
+              </div>
+              <h3
+                style={{
+                  margin: "0 0 6px 0",
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  color: "#0f172a",
+                }}
+              >
+                No Student Record Selected
+              </h3>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "13px",
+                  color: "#64748b",
+                  maxWidth: "380px",
+                  lineHeight: "1.5",
+                }}
+              >
+                Enter a PRN into the search box above to view the results.
+              </p>
             </div>
           )}
         </>
