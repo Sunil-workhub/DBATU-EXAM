@@ -24,7 +24,7 @@ const isValidUserSession = () => {
 };
 
 const ProtectedRoute = ({ children }) => {
-  return isValidUserSession() ? children : <Navigate to="/login" replace />;
+  return isValidUserSession() ? children : <Navigate to="/" replace />;
 };
 
 const AppRoutes = () => {
