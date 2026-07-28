@@ -28,9 +28,9 @@ const RedirectHandler = () => {
         sessionStorage.removeItem("user");
       }
     }
-    
+
     if (!isValid) {
-      navigate("/helpdesk-login", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [navigate]);
 

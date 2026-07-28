@@ -943,7 +943,9 @@ export default function StudentResultPortal() {
                   }}
                 >
                   You may use these online results for quick reference, but they
-                  do not replace your official grades.
+                  do not replace your official grades. Please ensure you verify
+                  your final marks against the original printed transcript
+                  provided by the University.
                 </p>
               </div>
             </div>

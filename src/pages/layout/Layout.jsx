@@ -26,7 +26,7 @@ export default function Layout() {
   const handleLogout = () => {
     sessionStorage.setItem("explicit_logout", "true");
     sessionStorage.removeItem("user");
-    navigate("/helpdesk-login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   const navItems = [
