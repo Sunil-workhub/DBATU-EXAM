@@ -1204,9 +1204,10 @@ export default function StudentResultPortal() {
                 fontWeight: "500",
               }}
             >
-              The results published online are for immediate information only.
-              Original statement of marks is issued by the University
-              separately.
+              You may use these online results for quick reference, but they do
+              not replace your official grades. Please ensure you verify your
+              final marks against the original printed transcript provided by
+              the University.
             </p>
           </div>
         </div>
