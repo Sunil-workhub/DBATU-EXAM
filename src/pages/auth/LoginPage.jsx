@@ -263,7 +263,7 @@ export default function LoginPage() {
                 textAlign: "center",
               }}
             >
-              Student Portal Login
+              Exam Portal Login
             </h1>
             <p
               style={{
@@ -273,7 +273,7 @@ export default function LoginPage() {
                 textAlign: "center",
               }}
             >
-              Enter your university credentials to view results
+              Enter your credentials to login
             </p>
 
             {apiError && (
@@ -310,7 +310,7 @@ export default function LoginPage() {
                     if (errors.username)
                       setErrors((p) => ({ ...p, username: undefined }));
                   }}
-                  placeholder="PRN / User Registration ID"
+                  placeholder="User ID"
                   style={getInputStyle(!!errors.username)}
                   onFocus={(e) => setFocusStyle(e.target)}
                   onBlur={(e) => setBlurStyle(e.target, !!errors.username)}
