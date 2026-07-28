@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 // DBATU Branding Assets
@@ -8,131 +8,14 @@ import BgImage1 from "../../assets/images/batubg.jfif";
 
 /* ── UI Design System Tokens ─────────────────────────────────────── */
 const ACCENT = "#002147"; // DBATU Primary Deep Navy
-const ACCENT_DARK = "#001838";
-const TEXT_MAIN = "#111111";
-const TEXT_SUB = "#6b7280";
-const BORDER = "#e4e8ed";
-const ERROR = "#ef4444";
-const SUCCESS = "#16a34a";
-const INPUT_FOCUS = "rgba(0, 33, 71, 0.12)";
-
-const getInputStyle = (hasError) => ({
-  height: 48,
-  padding: "0 16px",
-  borderRadius: 10,
-  border: `1.5px solid ${hasError ? ERROR : BORDER}`,
-  background: hasError ? "#fef2f2" : "#f8f9fb",
-  fontSize: 13.5,
-  color: TEXT_MAIN,
-  outline: "none",
-  transition: "all 0.15s",
-  width: "100%",
-  boxSizing: "border-box",
-});
-
-const getPasswordInputStyle = (hasError) => ({
-  height: 48,
-  padding: "0 44px 0 16px",
-  borderRadius: 10,
-  border: `1.5px solid ${hasError ? ERROR : BORDER}`,
-  background: hasError ? "#fef2f2" : "#f8f9fb",
-  fontSize: 13.5,
-  color: TEXT_MAIN,
-  outline: "none",
-  transition: "all 0.15s",
-  width: "100%",
-  boxSizing: "border-box",
-});
-
-const setFocusStyle = (element) => {
-  element.style.borderColor = ACCENT;
-  element.style.boxShadow = `0 0 0 3px ${INPUT_FOCUS}`;
-  element.style.background = "#fff";
-};
-
-const setBlurStyle = (element, hasError) => {
-  element.style.borderColor = hasError ? ERROR : BORDER;
-  element.style.boxShadow = "none";
-  element.style.background = hasError ? "#fef2f2" : "#f8f9fb";
-};
-
-const EyeIcon = ({ open }) =>
-  open ? (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" />
-      <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
-  ) : (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
+const ACCENT_GRADIENT = "linear-gradient(135deg, #002147 0%, #0d3b66 100%)";
+const TEXT_MAIN = "#0f172a";
+const TEXT_SUB = "#64748b";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
-  // Core Authentication States
-  const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const validateForm = () => {
-    const errs = {};
-    if (!username.trim()) errs.username = "PRN / Registration No. is required";
-    if (!password.trim()) errs.password = "Password is required";
-    return errs;
-  };
-
-  const handleLoginSubmit = async (ev) => {
-    ev.preventDefault();
-    setApiError("");
-
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // Simulate authenticating against your new API backend
-      setTimeout(() => {
-        const userPayload = {
-          emp_Id: username.trim(),
-          name: username.trim(),
-          role: "Student",
-        };
-
-        sessionStorage.setItem("user", JSON.stringify(userPayload));
-        navigate("/results", { replace: true });
-      }, 600);
-    } catch (err) {
-      setApiError(err.message || "Authentication failed");
-      setLoading(false);
-    }
-  };
-
-  const handleDemoBypass = () => {
+  const handleQuickAccess = () => {
     const demoUser = {
       emp_Id: "2130331246058",
       name: "SUNIL VARMA",
@@ -143,310 +26,269 @@ export default function LoginPage() {
   };
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+        fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+        backgroundImage: `url(${BgImage1})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        position: "relative",
+      }}
+    >
+      {/* Dark Ambient Backdrop Overlay */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          width: "100vw",
-          overflow: "hidden",
-          fontFamily: "'Inter','Segoe UI',system-ui,sans-serif",
-          backgroundImage: `url(${BgImage1})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at center, rgba(0, 33, 71, 0.45) 0%, rgba(6, 14, 22, 0.82) 100%)",
+          backdropFilter: "blur(6px)",
+        }}
+      />
+
+      {/* Main Glass Card Container */}
+      <div
+        className="login-card"
+        style={{
           position: "relative",
+          zIndex: 1,
+          display: "flex",
+          width: "min(920px, 92vw)",
+          minHeight: "min(520px, 85vh)",
+          borderRadius: 28,
+          overflow: "hidden",
+          boxShadow:
+            "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15)",
+          background: "#ffffff",
         }}
       >
-        {/* Dark Backdrop Overlay */}
+        {/* LEFT BRANDING PANEL */}
         <div
+          className="login-image-panel"
           style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(6, 14, 22, 0.65)",
-            backdropFilter: "blur(2px)",
-          }}
-        />
-
-        <div
-          className="login-card"
-          style={{
+            flex: "0 0 46%",
             position: "relative",
-            zIndex: 1,
+            backgroundImage: `url(${BgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             display: "flex",
-            width: "min(940px, 92vw)",
-            height: "min(600px, 90vh)",
-            borderRadius: 24,
-            overflow: "hidden",
-            boxShadow:
-              "0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.08)",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: "36px 32px",
+            boxSizing: "border-box",
           }}
         >
-          {/* LEFT PANEL */}
           <div
-            className="login-image-panel"
             style={{
-              flex: "0 0 48%",
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(180deg, rgba(0,33,71,0.3) 0%, rgba(0,24,56,0.92) 100%)",
+            }}
+          />
+
+          {/* Top Badge */}
+          <div
+            style={{
               position: "relative",
-              backgroundImage: `url(${BgImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
-              padding: "0 28px 32px",
+              zIndex: 2,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              alignSelf: "flex-start",
+              backgroundColor: "rgba(255, 255, 255, 0.12)",
+              backdropFilter: "blur(8px)",
+              padding: "6px 14px",
+              borderRadius: 20,
+              border: "1px solid rgba(255, 255, 255, 0.2)",
             }}
           >
-            <div
+            <span
               style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,33,71,0.85) 100%)",
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor: "#22c55e",
+                boxShadow: "0 0 8px #22c55e",
               }}
             />
+            <span
+              style={{
+                fontSize: 11.5,
+                fontWeight: 700,
+                color: "#ffffff",
+                letterSpacing: "0.5px",
+                textTransform: "uppercase",
+              }}
+            >
+              Academic Portal
+            </span>
+          </div>
+
+          {/* Left Panel Title Content */}
+          <div style={{ position: "relative", zIndex: 2 }}>
             <h2
               style={{
-                position: "relative",
-                zIndex: 2,
-                margin: 0,
-                fontSize: 20,
+                margin: "0 0 8px",
+                fontSize: 22,
                 fontWeight: 800,
-                color: "#fff",
+                color: "#ffffff",
                 lineHeight: 1.3,
-                textShadow: "0 2px 12px rgba(0,0,0,0.5)",
+                letterSpacing: "-0.02em",
               }}
             >
               Dr. Babasaheb Ambedkar Technological University
-              <br />
-              <span style={{ fontSize: 13, fontWeight: 500, color: "#cbd5e1" }}>
-                Examination & Academic Result Portal
-              </span>
             </h2>
-          </div>
-
-          {/* RIGHT PANEL */}
-          <div
-            style={{
-              flex: 1,
-              background: "#ffffff",
-              display: "flex",
-              flexDirection: "column",
-              padding: "36px 40px",
-              overflowY: "auto",
-              boxSizing: "border-box",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 20,
-              }}
-            >
-              <img
-                src={DBATULogo}
-                alt="DBATU Logo"
-                style={{ height: 80, objectFit: "contain" }}
-              />
-            </div>
-
-            <h1
-              style={{
-                margin: "0 0 4px",
-                fontSize: 24,
-                fontWeight: 800,
-                color: TEXT_MAIN,
-                textAlign: "center",
-              }}
-            >
-              Exam Portal Login
-            </h1>
             <p
               style={{
-                margin: "0 0 24px",
+                margin: 0,
                 fontSize: 13,
-                color: TEXT_SUB,
-                textAlign: "center",
+                fontWeight: 500,
+                color: "#93c5fd",
+                lineHeight: 1.5,
               }}
             >
-              Enter your credentials to login
+              Official Examination Results & Academic Performance Verification
+              Portal
             </p>
+          </div>
+        </div>
 
-            {apiError && (
-              <div
-                style={{
-                  marginBottom: 16,
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  background: "#fef2f2",
-                  border: "1px solid rgba(239,68,68,0.25)",
-                  color: ERROR,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                }}
-              >
-                <span style={{ fontWeight: "bold" }}>⚠️</span> {apiError}
-              </div>
-            )}
+        {/* RIGHT QUICK ACCESS PANEL */}
+        <div
+          style={{
+            flex: 1,
+            background: "#ffffff",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "40px 48px",
+            boxSizing: "border-box",
+            position: "relative",
+          }}
+        >
+          {/* Logo Container */}
+          <div
+            style={{
+              width: 88,
+              height: 88,
+              borderRadius: 22,
+              background: "#f8fafc",
+              border: "1px solid #f1f5f9",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 20,
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)",
+            }}
+          >
+            <img
+              src={DBATULogo}
+              alt="DBATU Logo"
+              style={{ height: 64, width: 64, objectFit: "contain" }}
+            />
+          </div>
 
-            <form
-              onSubmit={handleLoginSubmit}
-              style={{ display: "flex", flexDirection: "column", gap: 14 }}
-              noValidate
+          <h1
+            style={{
+              margin: "0 0 6px",
+              fontSize: 24,
+              fontWeight: 800,
+              color: TEXT_MAIN,
+              textAlign: "center",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Result Portal
+          </h1>
+          <p
+            style={{
+              margin: "0 0 32px",
+              fontSize: 13.5,
+              color: TEXT_SUB,
+              textAlign: "center",
+              maxWidth: 300,
+              lineHeight: 1.5,
+            }}
+          >
+            Access examination statements, semester marks, and CGPA reports
+            instantly.
+          </p>
+
+          {/* Primary Action Button (Quick Access) */}
+          <button
+            type="button"
+            onClick={handleQuickAccess}
+            style={{
+              height: 52,
+              width: "100%",
+              maxWidth: 320,
+              borderRadius: 14,
+              border: "none",
+              background: ACCENT_GRADIENT,
+              color: "#ffffff",
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow:
+                "0 12px 24px -6px rgba(0, 33, 71, 0.35), 0 4px 6px -2px rgba(0, 33, 71, 0.05)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow =
+                "0 16px 32px -6px rgba(0, 33, 71, 0.45)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow =
+                "0 12px 24px -6px rgba(0, 33, 71, 0.35)";
+            }}
+          >
+            <span>Quick Access Portal</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    if (errors.username)
-                      setErrors((p) => ({ ...p, username: undefined }));
-                  }}
-                  placeholder="User ID"
-                  style={getInputStyle(!!errors.username)}
-                  onFocus={(e) => setFocusStyle(e.target)}
-                  onBlur={(e) => setBlurStyle(e.target, !!errors.username)}
-                />
-                {errors.username && (
-                  <span style={{ fontSize: 11, color: ERROR, paddingLeft: 4 }}>
-                    {errors.username}
-                  </span>
-                )}
-              </div>
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <div style={{ position: "relative" }}>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (errors.password)
-                        setErrors((p) => ({ ...p, password: undefined }));
-                    }}
-                    placeholder="Password"
-                    style={getPasswordInputStyle(!!errors.password)}
-                    onFocus={(e) => setFocusStyle(e.target)}
-                    onBlur={(e) => setBlurStyle(e.target, !!errors.password)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    style={{
-                      position: "absolute",
-                      right: 13,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: 4,
-                      color: TEXT_SUB,
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <EyeIcon open={showPassword} />
-                  </button>
-                </div>
-                {errors.password && (
-                  <span style={{ fontSize: 11, color: ERROR, paddingLeft: 4 }}>
-                    {errors.password}
-                  </span>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  height: 48,
-                  width: "100%",
-                  borderRadius: 10,
-                  border: "none",
-                  background: ACCENT,
-                  color: "#fff",
-                  fontSize: 14.5,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  marginTop: 6,
-                  boxShadow: "0 4px 12px rgba(0, 33, 71, 0.25)",
-                  transition: "background 0.2s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = ACCENT_DARK)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = ACCENT)
-                }
-              >
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
-            </form>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                margin: "20px 0 12px",
-              }}
-            >
-              <div style={{ flex: 1, height: 1, background: BORDER }} />
-              <span style={{ fontSize: 11, color: TEXT_SUB, fontWeight: 600 }}>
-                DEMO MODE
-              </span>
-              <div style={{ flex: 1, height: 1, background: BORDER }} />
-            </div>
-
-            <button
-              type="button"
-              onClick={handleDemoBypass}
-              style={{
-                height: 42,
-                width: "100%",
-                borderRadius: 10,
-                border: "1.5px dashed #cbd5e1",
-                background: "#f8fafc",
-                color: "#334155",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-              }}
-            >
-              🚀 Direct Demo Quick Access
-            </button>
-
-            <div
-              style={{ marginTop: "auto", paddingTop: 20, textAlign: "center" }}
-            >
-              <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>
-                © {new Date().getFullYear()} Dr. Babasaheb Ambedkar
-                Technological University
-              </p>
-            </div>
+          {/* Footer Note */}
+          <div style={{ marginTop: 40, textAlign: "center" }}>
+            <p style={{ fontSize: 11.5, color: "#94a3b8", margin: 0 }}>
+              © {new Date().getFullYear()} Dr. Babasaheb Ambedkar Technological
+              University
+            </p>
           </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes loginSpin { to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; }
-        @media (max-width: 680px) { .login-image-panel { display: none !important; } }
+        @media (max-width: 720px) {
+          .login-image-panel { display: none !important; }
+        }
       `}</style>
-    </>
+    </div>
   );
 }
