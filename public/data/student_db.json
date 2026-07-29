@@ -2011,9 +2011,9 @@
             "currCredits": "22.0",
             "currGradePoints": "137.5",
             "sgpa": "6.25",
-            "cumCredits": "59.0",
-            "cumGradePoints": "422.5",
-            "cgpa": "7.16",
+            "cumCredits": "-",
+            "cumGradePoints": "-",
+            "cgpa": "-",
             "resultClass": null
           }
         }
@@ -2185,9 +2185,9 @@
             "currCredits": "22.0",
             "currGradePoints": "146.5",
             "sgpa": "6.66",
-            "cumCredits": "-",
-            "cumGradePoints": "-",
-            "cgpa": "-",
+            "cumCredits": "81.0",
+            "cumGradePoints": "569.5",
+            "cgpa": "7.03",
             "resultClass": null
           }
         }
